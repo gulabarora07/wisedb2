@@ -75,7 +75,9 @@ typedef struct vertex{
 }vertex;
 
 
-
+/*
+	functions for computing hash values of query and vertex
+*/
 namespace std {
 	inline size_t hash_value(const query & x){
 		boost::hash<string> hasher;
@@ -84,8 +86,7 @@ namespace std {
 	// to do
 	// account for hash of other members of vertex too for computing hash, use hash_combine
 	inline size_t hash_value(const vertex & x){
-		size_t value = boost::hash_range(x.q.begin(), x.q.end());
-		return value;
+		return boost::hash_range(x.q.begin(), x.q.end());
 	}
 }
 

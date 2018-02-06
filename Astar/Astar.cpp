@@ -23,6 +23,7 @@ class query{
 private:
 	friend istream& operator>>(istream &, query &);
 	friend ostream& operator<<(ostream &, const query &);
+	friend size_t hash_value(const query &);
 public:
 	string name;
 	cost_t cost;
@@ -36,8 +37,8 @@ public:
 	inline bool operator<(const query & other) const{
 		return this->name < other.name;
 	}
-	friend size_t hash_value(const query &);
 };
+
 istream& operator>>(istream & input, query & q){
 	return input>>q.name>>q.cost;
 }
@@ -48,43 +49,31 @@ ostream& operator<<(ostream & output, const query & q){
 
 /*
 	struct vertex
-	//to do operator==
 */
 typedef struct vertex{
 	vector<query> q;
 	int last_machine_no;
 	double last_machine_time;
-
 	vertex():last_machine_no(0),last_machine_time(0){}
-	// to do
-	// bool comparison = result of comparing 'this' to 'other'
+
+	// bool comparison = result of comparing 'this' to 'other' on basis of only remaining queries
 	inline bool operator==(const vertex & other) const {
-		bool comparison = false;
-		if(this->q.size()==other.q.size() && this->last_machine_no==other.last_machine_no && this->last_machine_time == other.last_machine_time){
-			bool comparison = true;
-			for(int i = 0; i < this->q.size(); i++){
-				if(this->q[i] == other.q[i]){
-					comparison = false;
-					break;
-				}
-			}
-		}
-		return comparison;
+		return this->q == other.q;
 	}
+private:
 	friend size_t hash_value(const vertex &);
 }vertex;
 
 
 /*
-	functions for computing hash values of query and vertex
+	functions for computing hash values of query and vertex, do not change it
 */
 namespace std {
 	inline size_t hash_value(const query & x){
 		boost::hash<string> hasher;
 		return hasher(x.name);
 	}
-	// to do
-	// account for hash of other members of vertex too for computing hash, use hash_combine
+	// only accounts for the remaining queries
 	inline size_t hash_value(const vertex & x){
 		return boost::hash_range(x.q.begin(), x.q.end());
 	}
@@ -93,7 +82,8 @@ namespace std {
 
 /*
 	Graph class
-	change penalty condition in get_neighbours
+	//to do
+	change penalty condition in get_neighbours, add comments
 */
 template<typename query>
 class Graph{
@@ -126,8 +116,8 @@ public:
 };
 
 /*
-	to do,
-	check it once with harsha
+	//to do
+	check it once with harsha, add comments also
 */
 template<typename Graph>
 void a_star_search

@@ -9,7 +9,7 @@
 
 #define INF 1e10
 
-/* change code to account for different costs for different machines */
+/* change code to account for different costs for different machines, change vector<query> to set in vertex */
 using namespace std;
 typedef double cost_t;
 
@@ -42,16 +42,18 @@ public:
 	}
 };
 
-istream& operator>>(istream & input, query & q){
+inline istream& operator>>(istream & input, query & q){
 	return input>>q.name>>q.cost;
 }
-ostream& operator<<(ostream & output, const query & q){
+inline ostream& operator<<(ostream & output, const query & q){
 	return output<<q.name;
 }
 
 
 /*
 	class vertex
+	//to do
+	change vector<query> to set<query>
 */
 class vertex{
 public:
@@ -60,17 +62,30 @@ public:
 	double last_machine_time;
 	vertex():last_machine_no(0),last_machine_time(0){}
 	vertex(vector<query> & a):q(a),last_machine_no(0),last_machine_time(0){}
-
+	// copy constructor
+	vertex(const vertex & other):q(other.q),last_machine_no(other.last_machine_no),last_machine_time(other.last_machine_time){}
+	// copy assignment operator
+	const vertex & operator=(const vertex & other){
+		if(this!=&other){
+			this->q = other.q;
+			this->last_machine_no = other.last_machine_no;
+			this->last_machine_time = other.last_machine_time;
+		}
+		return *this;
+	}
+	inline bool same_queries(const vertex & other) const {
+		return this->q == other.q;
+	}
 	// bool comparison = result of comparing 'this' to 'other' on basis of only remaining queries
 	inline bool operator==(const vertex & other) const {
-		return this->q == other.q;
+		return (this->q == other.q) && (this->last_machine_no == other.last_machine_no);
 	}
 	inline bool operator!=(const vertex & other) const {
 		return !this->operator==(other);
 	}
 	// required for set
 	inline bool operator<(const vertex & other) const {
-		return this->q.size() < other.q.size();
+		return (this->last_machine_no < other.last_machine_no)||(this->q.size() < other.q.size());
 	}
 private:
 	friend void difference(ostream &, const vertex &, const vertex &);
@@ -84,23 +99,23 @@ ostream& operator<<(ostream & output, const vertex & v){
 		if(i<(int)v.q.size()-1)
 			output<<", ";
 	}
-	output<<"}";
-	output<<"hello"<<endl;
+	return output<<"}("<<v.last_machine_no<<")";
 }
 
 void difference(ostream & output, const vertex & u, const vertex & v){
+	output<<u<<"->"<<v<<endl;
+	if(u.last_machine_no+1 == v.last_machine_no){
+		output<<"Initialize VM"<<endl;
+		return;
+	}
 	set<query> m(v.q.begin(),v.q.end());
-	int f = 0;
 	for(int i = 0; i < u.q.size(); i++){
-		if(m.find(u.q[i])!=m.end()){
+		if(m.find(u.q[i])==m.end()){
 			output<<"Assign "<<u.q[i]<<" to "<<u.last_machine_no<<endl;
-			f=1;
-			break;
+			return;
 		}
 	}
-	if(!f){
-		output<<"Initialize VM"<<endl;
-	}
+	output<<"No difference"<<endl;
 }
 
 
@@ -151,18 +166,22 @@ public:
 	}
 	static void get_neighbours(vertex & a, vector<vertex> & neighbors){
 		neighbors.clear();
-		vertex b = a;
-		b.last_machine_time++;
-		b.last_machine_time = 0;
-		neighbors.push_back(b);
-		for(int i = 0; i < a.q.size(); i++){
-			if(a.q[i].cost+a.last_machine_time < perVMpenalty){											/* penalty condition */
-				b = a;
-				b.q.erase(b.q.begin()+i);
-				b.last_machine_time+=a.q[i].cost;
-				neighbors.push_back(b);
-			}
+		vertex b;
+		if(a.last_machine_time!=0 || a.last_machine_no==0){
+			vertex b = a;
+			b.last_machine_no++;
+			b.last_machine_time = 0;
+			neighbors.push_back(b);
 		}
+		if(a.last_machine_no)
+			for(int i = 0; i < a.q.size(); i++){
+				if(a.q[i].cost+a.last_machine_time <= perVMpenalty){											/* penalty condition */
+					b = a;
+					b.q.erase(b.q.begin()+i);
+					b.last_machine_time+=a.q[i].cost;
+					neighbors.push_back(b);
+				}
+			}
 	}
 	static cost_t cost(vertex & a, vertex & b){
 		set<query> m(b.q.begin(),b.q.end());
@@ -172,7 +191,7 @@ public:
 				ans+=a.q[i].min_cost();
 		}
 		if(!ans)
-			ans = startupCost;
+			ans = startupCost+perVMpenalty-a.last_machine_time;
 		return ans;
 	}
 };
@@ -207,7 +226,7 @@ public:
 // 		}
 // 		G.get_neighbors(current, neighbors);
 // 		for (vertex next : neighbors) {
-// 			cost_t new_cost = cost_so_far[current] + G.cost(current, next);
+// 			cost_t new_cost = cost_so_far[current] + Graph::cost(current, next);
 // 			if(cost_so_far.find(next) == cost_so_far.end()){
 // 				cost_so_far[next] = INF;
 // 				priority[next] = INF;
@@ -226,32 +245,41 @@ public:
 
 
 /*
-	//to do
-	check it once with harsha, add comments also
+	dijkstra set implementation
 */
-void dijkstra
-	(vertex start, vertex goal,
+void dijkstra(vertex & start, vertex & goal, bool print_on,
 	unordered_map<vertex, vertex> & came_from,
 	unordered_map<vertex, cost_t> & cost_so_far)
 {
-	Graph G;
 	set<pair<cost_t,vertex> > frontier;
 	vector<vertex> neighbours;
 
 	frontier.insert(make_pair(cost_t(0), start));
 	came_from[start] = start;
 	cost_so_far[start] = cost_t(0);
-	
+	if(print_on) cout<<"Start is "<<start<<" and Goal is "<<goal<<endl;
+
 	while (!frontier.empty()) {
 		vertex current = frontier.begin()->second;
 		frontier.erase(frontier.begin());
-		if (current == goal)
+
+		if(print_on) cout<<current<<": \t";
+		
+		if (current.same_queries(goal)){
+			goal = current;
+			if(print_on) cout<<"reached goal with "<<current<<endl;
 			break;
-		G.get_neighbours(current, neighbours);
+		}
+		
+		Graph::get_neighbours(current, neighbours);
 		for (vertex next : neighbours) {
-			cost_t new_cost = cost_so_far[current] + G.cost(current, next);
+			
+			if(print_on) cout<<next<<"\t";
+
+			cost_t new_cost = cost_so_far[current] + Graph::cost(current, next);
 			if(cost_so_far.find(next) == cost_so_far.end())
 				cost_so_far[next] = INF;
+			
 			if (new_cost < cost_so_far[next]) {
 				frontier.erase(make_pair(cost_so_far[next],next));
 				cost_so_far[next] = new_cost;
@@ -259,8 +287,8 @@ void dijkstra
 				frontier.insert(make_pair(cost_so_far[next],next));
 			}
 		}
+		if(print_on) cout<<endl;
 	}
-	cout<<"hi"<<endl;
 }
 
 /*
@@ -273,23 +301,33 @@ int main(){
 	cin>>perVMpenalty;
 	cin>>startupCost;
 	vector<query> q(n);
-	for(int i = 0; i < n; i++){
+	for(int i = 0; i < n; i++)
 		cin>>q[i];
-		cout<<q[i]<<endl;
-	}
 	vertex st(q), goal;
 	unordered_map<vertex, vertex, std::hash<vertex> > came_from;
 	unordered_map<vertex, cost_t> cost_so_far;
-	dijkstra(st,goal,came_from,cost_so_far);
+	dijkstra(st,goal,false,came_from,cost_so_far);
 	vertex u = goal;
-	int f = 0;
+	stringstream ss;
+	stack<string> s;
 	while(u!=st){
 		vertex v = came_from[u];
-		difference(cout,v,u);
-		cout<<u<<endl;
+		difference(ss,v,u);
+		s.push(ss.str());
+		ss.str("");
 		u = v;
-		f++;
-		if(f==3)
-			break;
+	}
+	while(!s.empty()){
+		cout<<s.top()<<endl;
+		s.pop();
 	}
 }
+
+/*
+some testing inputs:
+5 5 1 
+a 2 b 3 c 4 d 2.5 e 4
+
+3 3 5
+a 2 b 2 c 1
+*/

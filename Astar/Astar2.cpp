@@ -52,15 +52,17 @@ inline ostream& operator<<(ostream & output, const query & q){
 
 /*
 	class vertex
-	//vector<query> is fast compared to set<query>
+	//to do
+	change vector<query> to set<query>
 */
 class vertex{
 public:
-	vector<query> q;
+	set<query> q;
 	int last_machine_no;
 	double last_machine_time;
 	vertex():last_machine_no(0),last_machine_time(0){}
-	vertex(vector<query> & a):q(a),last_machine_no(0),last_machine_time(0){}
+	vertex(vector<query> & a):q(a.begin(),a.end()),last_machine_no(0),last_machine_time(0){}
+	vertex(set<query> & a):q(a.begin(),a.end()),last_machine_no(0),last_machine_time(0){}
 	// copy constructor
 	vertex(const vertex & other):q(other.q),last_machine_no(other.last_machine_no),last_machine_time(other.last_machine_time){}
 	// copy assignment operator
@@ -93,9 +95,11 @@ private:
 
 ostream& operator<<(ostream & output, const vertex & v){
 	output<<"{";
-	for(int i = 0; i < v.q.size(); i++){
-		output<<v.q[i];
-		if(i<(int)v.q.size()-1)
+	int f = 0;
+	for(auto & it : v.q){
+		f++;
+		output<<it;
+		if(f!=v.q.size())
 			output<<", ";
 	}
 	return output<<"}("<<v.last_machine_no<<")";
@@ -107,10 +111,9 @@ void difference(ostream & output, const vertex & u, const vertex & v){
 		output<<"Initialize VM"<<endl;
 		return;
 	}
-	set<query> m(v.q.begin(),v.q.end());
-	for(int i = 0; i < u.q.size(); i++){
-		if(m.find(u.q[i])==m.end()){
-			output<<"Assign "<<u.q[i]<<" to "<<u.last_machine_no<<endl;
+	for(auto & it : u.q){
+		if(v.q.find(it)==v.q.end()){
+			output<<"Assign "<<it<<" to "<<u.last_machine_no<<endl;
 			return;
 		}
 	}
@@ -123,7 +126,7 @@ void difference(ostream & output, const vertex & u, const vertex & v){
 */
 
 // only accounts for the name of the query, part of boost, can be called by boost::hash<query>(), required by std::hash<vertex>()
-size_t hash_value(const query & x)
+inline size_t hash_value(const query & x)
 {
 	boost::hash<string> hasher;
 	return hasher(x.name);
@@ -134,7 +137,7 @@ namespace std {
 	template <>
 	struct hash<vertex>
 	{
-		size_t operator()(const vertex & x) const{
+		inline size_t operator()(const vertex & x) const{
 			boost::hash<int> hasher;
 			size_t seed = hasher(x.last_machine_no);
 			boost::hash_range(seed, x.q.begin(), x.q.end());
@@ -154,12 +157,11 @@ namespace std {
 */
 class Graph{
 public:
-	static cost_t heuristic(const vertex & a, const vertex & b){
-		set<query> m(b.q.begin(),b.q.end());
+	static inline cost_t heuristic(const vertex & u, const vertex & v){
 		cost_t ans = 0;
-		for(int i = 0; i < a.q.size(); i++){
-			if(m.find(a.q[i])==m.end())
-				ans+=a.q[i].min_cost();
+		for(auto & it : u.q){
+			if(v.q.find(it)==v.q.end())
+				ans+=it.min_cost();
 		}
 		return ans;
 	}
@@ -173,24 +175,23 @@ public:
 			neighbors.push_back(b);
 		}
 		if(a.last_machine_no)
-			for(int i = 0; i < a.q.size(); i++){
-				if(a.q[i].cost+a.last_machine_time <= perVMpenalty){											/* penalty condition */
+			for(auto & it : a.q){
+				if(it.cost+a.last_machine_time <= perVMpenalty){											/* penalty condition */
 					b = a;
-					b.q.erase(b.q.begin()+i);
-					b.last_machine_time+=a.q[i].cost;
+					b.q.erase(it);
+					b.last_machine_time+=it.cost;
 					neighbors.push_back(b);
 				}
 			}
 	}
-	static cost_t cost(const vertex & a, const vertex & b){
-		set<query> m(b.q.begin(),b.q.end());
+	static inline cost_t cost(const vertex & u, const vertex & v){
 		cost_t ans = 0;
-		for(int i = 0; i < a.q.size(); i++){
-			if(m.find(a.q[i])==m.end())
-				ans+=a.q[i].min_cost();
+		for(auto & it : u.q){
+			if(v.q.find(it)==v.q.end())
+				ans+=it.min_cost();
 		}
-		if(!ans)
-			ans = startupCost+perVMpenalty-a.last_machine_time;
+		if(ans == 0)
+			ans = startupCost+perVMpenalty-u.last_machine_time;
 		return ans;
 	}
 };
@@ -314,7 +315,7 @@ int main(){
 		//	testing dijkstra
 		// cout<<"Dijkstra results:"<<endl<<endl;
 		dijkstra(st,goal,came_from,cost_so_far);
-		// vertex u = goal;
+		vertex u = goal;
 		// stringstream ss;
 		// stack<string> s;
 		// while(u!=st){

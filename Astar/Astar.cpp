@@ -123,7 +123,7 @@ void difference(ostream & output, const vertex & u, const vertex & v){
 */
 
 // only accounts for the name of the query, part of boost, can be called by boost::hash<query>(), required by std::hash<vertex>()
-size_t hash_value(const query & x)
+inline size_t hash_value(const query & x)
 {
 	boost::hash<string> hasher;
 	return hasher(x.name);
@@ -134,7 +134,7 @@ namespace std {
 	template <>
 	struct hash<vertex>
 	{
-		size_t operator()(const vertex & x) const{
+		inline size_t operator()(const vertex & x) const{
 			boost::hash<int> hasher;
 			size_t seed = hasher(x.last_machine_no);
 			boost::hash_range(seed, x.q.begin(), x.q.end());
@@ -145,7 +145,6 @@ namespace std {
 /*
 
 */
-
 
 /*
 	Graph class
@@ -313,10 +312,10 @@ int main(){
 		unordered_map<vertex, cost_t> cost_so_far;
 		//	testing dijkstra
 		// cout<<"Dijkstra results:"<<endl<<endl;
-		dijkstra(st,goal,came_from,cost_so_far);
-		// vertex u = goal;
-		// stringstream ss;
-		// stack<string> s;
+		// dijkstra(st,goal,came_from,cost_so_far);
+		vertex u = goal;
+		stringstream ss;
+		stack<string> s;
 		// while(u!=st){
 		// 	vertex v = came_from[u];
 		// 	difference(ss,v,u);
@@ -329,20 +328,20 @@ int main(){
 		// 	s.pop();
 		// }
 		// testing Astar
-		// cout<<"Astar results:"<<endl<<endl;
-		// Astar(st,goal,came_from,cost_so_far);
-		// u = goal;
-		// while(u!=st){
-		// 	vertex v = came_from[u];
-		// 	difference(ss,v,u);
-		// 	s.push(ss.str());
-		// 	ss.str("");
-		// 	u = v;
-		// }
-		// while(!s.empty()){
-		// 	cout<<s.top()<<endl;
-		// 	s.pop();
-		// }
+		cout<<"Astar results:"<<endl<<endl;
+		Astar(st,goal,came_from,cost_so_far);
+		u = goal;
+		while(u!=st){
+			vertex v = came_from[u];
+			difference(ss,v,u);
+			s.push(ss.str());
+			ss.str("");
+			u = v;
+		}
+		while(!s.empty()){
+			cout<<s.top()<<endl;
+			s.pop();
+		}
 	}
 	int stop_s=clock();
 	cout << "time: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << endl;

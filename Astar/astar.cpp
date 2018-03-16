@@ -10,6 +10,7 @@
 #include "vertex.h"
 #include "query.h"
 #include "graph.h"
+#include "algos.h"
 #define INF 1e10
 
 /* change code to account for different costs for different machines, change vector<query> to set in vertex */
@@ -17,24 +18,25 @@ using namespace std;
 typedef double cost_t;
 
 /*
-	dijkstra set implementation
-*/
-void dijkstra(vertex & start, vertex & goal,
+	Astar set implementation
+*/ 
+void Astar(vertex & start, vertex & goal,
 	unordered_map<vertex, vertex> & came_from,
 	unordered_map<vertex, cost_t> & cost_so_far,
+	cost_t (*heuristic)(const vertex & a, const vertex & b),
 	const bool print_on)
 {
-	set<pair<cost_t,vertex> > frontier;
+	set<pair<cost_t,vertex> > openList;
 	vector<vertex> neighbours;
 
-	frontier.insert(make_pair(cost_t(0), start));
+	openList.insert(make_pair(cost_t(0)+heuristic(start,goal), start));
 	came_from[start] = start;
 	cost_so_far[start] = cost_t(0);
 	if(print_on) cout<<"Start is "<<start<<" and Goal is "<<goal<<endl;
 
-	while (!frontier.empty()) {
-		vertex current = frontier.begin()->second;
-		frontier.erase(frontier.begin());
+	while (!openList.empty()) {
+		vertex current = openList.begin()->second;
+		openList.erase(openList.begin());
 
 		if(print_on) cout<<current<<": \t";
 		
@@ -53,11 +55,12 @@ void dijkstra(vertex & start, vertex & goal,
 			if(cost_so_far.find(next) == cost_so_far.end())
 				cost_so_far[next] = INF;
 			
+			cost_t h = heuristic(next,goal);
 			if (new_cost < cost_so_far[next]) {
-				frontier.erase(make_pair(cost_so_far[next], next));
+				openList.erase(make_pair(cost_so_far[next] + h, next));
 				cost_so_far[next] = new_cost;
 				came_from[next] = current;
-				frontier.insert(make_pair(cost_so_far[next], next));
+				openList.insert(make_pair(cost_so_far[next] + h, next));
 			}
 		}
 		if(print_on) cout<<endl;

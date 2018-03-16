@@ -4,8 +4,8 @@ COMPILE = $(CC) $(CC_FLAGS)
 
 all: a.out
 
-a.out: main.o graph.o dijkstra.o vertex.o
-	$(COMPILE) -o $@ main.o graph.o dijkstra.o vertex.o
+a.out: main.o graph.o dijkstra.o astar.o vertex.o
+	$(COMPILE) -o $@ main.o graph.o dijkstra.o vertex.o astar.o
 
 vertex.o: vertex.h query.h
 	$(COMPILE) -c vertex.cpp
@@ -13,8 +13,11 @@ vertex.o: vertex.h query.h
 graph.o: graph.cpp vertex.h query.h
 	$(COMPILE) -c graph.cpp
 
-dijkstra.o: dijkstra.cpp graph.h vertex.h query.h
+dijkstra.o: dijkstra.cpp graph.h vertex.h query.h algos.h
 	$(COMPILE) -c dijkstra.cpp
+
+astar.o: astar.cpp graph.h vertex.h query.h algos.h
+	$(COMPILE) -c astar.cpp	
 
 main.o: main.cpp vertex.h query.h graph.h
 	$(COMPILE) -c main.cpp

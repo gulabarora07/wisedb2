@@ -1,0 +1,49 @@
+CC = g++
+CC_FLAGS = -std=c++11
+COMPILE = $(CC) $(CC_FLAGS)
+
+all: a.out
+
+# all2: QueryTimePredictor.o ModelVM.o
+
+# a.out: main.o graph.o dijkstra.o astar.o vertex.o
+# 	$(COMPILE) -o $@ main.o graph.o dijkstra.o vertex.o astar.o
+
+# vertex.o: vertex.h query.h
+# 	$(COMPILE) -c vertex.cpp
+
+# graph.o: graph.cpp vertex.h query.h
+# 	$(COMPILE) -c graph.cpp
+
+# dijkstra.o: dijkstra.cpp graph.h vertex.h query.h algos.h
+# 	$(COMPILE) -c dijkstra.cpp
+
+# astar.o: astar.cpp graph.h vertex.h query.h algos.h
+# 	$(COMPILE) -c astar.cpp	
+
+# main.o: main.cpp vertex.h query.h graph.h
+# 	$(COMPILE) -c main.cpp
+
+a.out: QueryTimePredictor.o ModelVM.o main.o ModelQuery.o VMType.o
+	$(COMPILE) -o a.out main.o VMType.o ModelQuery.o QueryTimePredictor.o ModelVM.o
+
+ModelQuery.o: ModelQuery.cpp ModelQuery.h
+	$(COMPILE) -c ModelQuery.cpp
+
+VMType.o: VMType.cpp VMType.h
+	$(COMPILE) -c VMType.cpp
+
+main.o: main.cpp QueryTimePredictor.h ModelVM.h
+	$(COMPILE) -c main.cpp
+
+QueryTimePredictor.o: QueryTimePredictor.cpp QueryTimePredictor.h
+	$(COMPILE) -c QueryTimePredictor.cpp
+
+ModelVM.o: ModelVM.cpp ModelVM.h
+	$(COMPILE) -c ModelVM.cpp
+
+clean:
+	rm a.out *.o
+
+run:
+	./a.out

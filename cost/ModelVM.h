@@ -5,7 +5,7 @@ using namespace std;
 #ifndef ModelVM_H
 #define ModelVM_H
 
-// class QueryTimePredictor;
+class QueryTimePredictor;
 class ModelVM
 {
 	vector<ModelQuery> queries;

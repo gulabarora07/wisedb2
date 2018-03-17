@@ -1,13 +1,13 @@
 #include <bits/stdc++.h>
 // #include "temp.cpp"
-#include "VMType.h"
-#include "Cost.h"
-#include "ModelQuery.h"
-using namespace std;
 
 #ifndef QueryTimePredictor_H
 #define QueryTimePredictor_H
-
+#include "VMType.h"
+#include "Cost.h"
+#include "ModelQuery.h"
+#include "ModelVM.h"
+using namespace std;
 class ModelVM;
 
 class QueryTimePredictor

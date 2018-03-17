@@ -3,7 +3,7 @@ using namespace std;
 
 #include "VMType.h"
 
-VMType::VMType(int id = 0)
+VMType::VMType(int i)
 {
 	this->id = id;
 }
@@ -49,7 +49,26 @@ int VMType::getCost()
 // 			return null;
 // 	}
 // }
-
+string VMType::toString() {
+	switch (this->id) {
+		case 4:
+			return "c4.large";
+		case 5:
+			return "c4.xlarge";
+		case 3:
+			return "m3.large";
+		case 2:
+			return "m3.medium";
+		case 1:
+			return "t2.medium";
+		case 0:
+			return "t2.small";
+		case 6:
+			return "unit";
+		default:
+			return "not valid VMType";
+	}
+}
 int VMType::getId()
 {
 	return id;

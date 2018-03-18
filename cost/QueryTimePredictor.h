@@ -21,9 +21,9 @@ class QueryTimePredictor
 
 	public:
 		QueryTimePredictor(map<int, map<VMType, int> > latency, map<int, map<VMType, int> > ioData, vector<VMType> types); 
-		QueryTimePredictor(vector<VMType> types);
+		QueryTimePredictor(vector<VMType> types,int numQ);
 		QueryTimePredictor();
-		void loadValuesFromJSON();
+		void loadValuesFromJSON(int numQ);
 		int predict(ModelQuery q, ModelVM* vm);
 		int predictIO(ModelQuery q, ModelVM* vm);
 		int predict(ModelQuery q, VMType vm);

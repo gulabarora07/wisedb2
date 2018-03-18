@@ -5,7 +5,7 @@ using namespace std;
 
 VMType::VMType(int i)
 {
-	this->id = id;
+	this->id = i;
 }
 int VMType::getCost() 
 {
@@ -29,26 +29,7 @@ int VMType::getCost()
 			return INT_MAX;
 	}
 }
-// int fromString(string s) {
-// 	switch (s) {
-// 		case "c4.large":
-// 			return 4;
-// 		case "c4.xlarge":
-// 			return 5;
-// 		case "m3.large":
-// 			return 3;
-// 		case "m3.medium":
-// 			return 2;
-// 		case "t2.medium":
-// 			return 1;
-// 		case "t2.small":
-// 			return 0;
-// 		case "unit":
-// 			return 6;
-// 		default:
-// 			return null;
-// 	}
-// }
+
 string VMType::toString() {
 	switch (this->id) {
 		case 4:
@@ -69,7 +50,7 @@ string VMType::toString() {
 			return "not valid VMType";
 	}
 }
-int VMType::getId()
+int VMType::getId() const
 {
 	return id;
 }
@@ -77,4 +58,9 @@ int VMType::getId()
 bool VMType::operator< (const VMType& c) const
 {
 	return (this->id < c.id);
+}
+
+void VMType::operator= (const VMType &c)
+{
+	this->id = c.getId();
 }

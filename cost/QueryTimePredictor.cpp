@@ -19,37 +19,41 @@ QueryTimePredictor::QueryTimePredictor(map<int, map<VMType, int> > latency, map<
 	this->types = types;
 }
 
-// public QueryTimePredictor(map<int, map<VMType, int> > latency, map<int, map<VMType, int> > ioData) {
-// 	latencyData = latency;
-// 	this->ioData = ioData;
-// 	map<int, map<VMType, int> >::iterator it;
 
-// 	(this->QUERY_TYPES).clear();
-// 	(this->types).clear();
-
-// 	for(it=latency.begin();it!=latency.end();it++)
-// 		(this->QUERY_TYPES).push_back(it->first);
-// }
-
-QueryTimePredictor::QueryTimePredictor(vector<VMType> types) {
-	this->types = types;
-	loadValuesFromJSON();
+QueryTimePredictor::QueryTimePredictor(vector<VMType> type,int numQ) {
+	(this->types).clear();
+	for(int i=0;i<type.size();i++)
+	{
+		// cout<<type[i].getId()<<" kdn"<<endl;
+		(this->types).push_back(type[i]);
+	}
+	loadValuesFromJSON(numQ);
 }
 
 QueryTimePredictor::QueryTimePredictor() {
-	loadValuesFromJSON();
+	(this->types).clear();
+	for(int i=0;i<7;i++)
+	{
+		VMType temp1(i);
+		// cout<<type[i].getId()<<" kdn"<<endl;
+		(this->types).push_back(temp1);
+	}
+	loadValuesFromJSON(16);
 }
 
-void QueryTimePredictor::loadValuesFromJSON() {
+void QueryTimePredictor::loadValuesFromJSON(int numQ) {
 	latencyData.clear();
 	ioData.clear();
 	QUERY_TYPES.clear();
 
-	for(int i=0;i<16;i++)
+	for(int i=0;i<numQ;i++)
 	{
 		QUERY_TYPES.push_back(i);
 		map<VMType, int> latency;
 		map<VMType, int> io;
+
+		latency.clear();
+		io.clear();
 
 		for(int j=0;j<types.size();j++)
 		{
@@ -59,7 +63,10 @@ void QueryTimePredictor::loadValuesFromJSON() {
 
 		latencyData[i] = latency;
 		ioData[i] = io;
+
+		// cout<<"io,lat "<<io.size()<<" "<<latency.size()<<endl;
 	}
+	// cout<<"size of latency "<<latencyData.size()<<endl;
 	// Yet to be implemented
 
 }
@@ -89,17 +96,6 @@ int QueryTimePredictor::predict(ModelQuery q, VMType vm) {
 	
 	return latencyData[q.getType()][vm];
 }
-
-// Set<ModelVM> getNewVMs() {
-// 	Set<ModelVM> toR = new HashSet<ModelVM>();
-
-// 	for (VMType t : types) {
-// 		toR.add(new ModelVM(t));
-
-// 	}
-
-// 	return toR;
-// }
 
 VMType QueryTimePredictor::getOneVM() {
 	return types[0];

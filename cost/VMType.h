@@ -19,8 +19,9 @@ class VMType
 		VMType(int id = 0);
 		int getCost();
 		string toString();
-		int getId();
+		int getId() const;
 		bool operator< (const VMType& c) const;
+		void operator= (const VMType &c);
 };
 
 #endif

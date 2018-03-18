@@ -57,8 +57,8 @@ void QueryTimePredictor::loadValuesFromJSON(int numQ) {
 
 		for(int j=0;j<types.size();j++)
 		{
-			latency[types[j]] = rand()%50;//random value;
-			io[types[j]] = rand()%50;//random value;
+			latency[types[j]] = rand()%50000;//random value;
+			io[types[j]] = rand()%50000;//random value;
 		}
 
 		latencyData[i] = latency;
@@ -119,7 +119,11 @@ void QueryTimePredictor::check()
 	ModelVM *medium = new ModelVM(t2);
 	for (int i=0;i<QUERY_TYPES.size();i++) {
 		ModelQuery q(i);
-		cout<<i<<"\t"<<medium->getCostForQuery(this, q)<<"\t"<<small->getCostForQuery(this, q)<<endl;
-
+		// cout<<i<<"\t"<<medium->getCostForQuery(this, q)<<"\t"<<small->getCostForQuery(this, q)<<endl;
+		for(int j=0;j<types.size();j++)
+		{
+			ModelVM *temp = new ModelVM(types[j]);
+			cout<<i<<"\t"<<temp->getCostForQuery(this,q)<<endl;
+		}
 	}
 }

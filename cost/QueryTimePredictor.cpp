@@ -112,7 +112,7 @@ void QueryTimePredictor::check()
 		cout<<i<<", "<<tym<<" ("<<ios<<" IOs)"<<endl;
 	}
 
-	cout<<"Type\tt2.med\tt2.small\n";
+	cout<<"QueryType VMType Cost\n";
 	VMType t1(0);
 	VMType t2(1);
 	ModelVM *small= new ModelVM(t1);
@@ -123,7 +123,7 @@ void QueryTimePredictor::check()
 		for(int j=0;j<types.size();j++)
 		{
 			ModelVM *temp = new ModelVM(types[j]);
-			cout<<i<<"\t"<<temp->getCostForQuery(this,q)<<endl;
+			cout<<i<<"\t"<<j<<"\t"<<temp->getCostForQuery(this,q)<<endl;
 		}
 	}
 }

@@ -1,10 +1,10 @@
 CC = g++
-CC_FLAGS = -std=c++11
+CC_FLAGS = -std=c++14
 COMPILE = $(CC) $(CC_FLAGS)
 
 all: a.out
 
-a.out: main.o graph.o dijkstra.o astar.o vertex.o
+a.out: main.o vertex.o graph.o dijkstra.o astar.o
 	$(COMPILE) -o $@ main.o graph.o dijkstra.o vertex.o astar.o
 
 vertex.o: vertex.h query.h

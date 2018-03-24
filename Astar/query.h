@@ -50,7 +50,7 @@ inline ostream& operator<<(ostream & output, const query & q){
 	return output<<q.name<<"["<<q.count<<"]";
 }
 
-// part of boos, can be called by boost::hash<query>(), required by std::hash<vertex>()
+// part of boost, can be called by boost::hash<query>(), required by std::hash<vertex>()
 inline size_t hash_value(const query & x)
 {
 	size_t seed = x.count;

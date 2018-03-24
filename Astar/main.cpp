@@ -28,21 +28,21 @@ int main(){
 	int n;
 	cin>>n>>perVMpenalty>>startupCost;
 	vector<query> q(n);
-	for(int i = 0; i < n; i++)
+	unordered_map<query,int,boost::hash<query> > query_indices;
+	for(int i = 0; i < n; i++){
 		cin>>q[i];
+		query_indices[q[i]] = i;
+	}
 	int t = 1;
-	int start_s=clock();
-	// the code you wish to time goes here
+	// int start_s=clock();
 	while(t--){
 		vertex st(q), goal;
 		unordered_map<vertex, vertex, std::hash<vertex> > came_from;
 		unordered_map<vertex, cost_t> cost_so_far;
-		//	testing dijkstra
-		cout<<"Dijkstra results:"<<endl<<endl;
-		// dijkstra(st,goal,came_from,cost_so_far);
 		vertex u = goal;
-		stringstream ss;
-		stack<string> s;
+		//	testing dijkstra
+		// cout<<"Dijkstra results:"<<endl<<endl;
+		// dijkstra(st,goal,came_from,cost_so_far);
 		// while(u!=st){
 		// 	vertex v = came_from[u];
 		// 	difference(ss,v,u);
@@ -55,23 +55,60 @@ int main(){
 		// 	s.pop();
 		// }
 		// testing Astar
-		cout<<"Astar results:"<<endl<<endl;
-		Astar(st,goal,came_from,cost_so_far,&(Graph::heuristic),true);
+		// cout<<"Astar results:"<<endl<<endl;
+		Astar(st,goal,came_from,cost_so_far,&(Graph::heuristic));
 		u = goal;
+		vector<vertex> path;
+		path.push_back(u);
 		while(u!=st){
 			vertex v = came_from[u];
-			difference(ss,v,u);
-			s.push(ss.str());
-			ss.str("");
 			u = v;
+			path.push_back(u);
 		}
-		while(!s.empty()){
-			cout<<s.top()<<endl;
-			s.pop();
+
+		reverse(path.begin(),path.end());
+
+		cost_t wait_time = perVMpenalty;
+		vector<int> total_of_x(n,0);
+		vector<cost_t> cost_of_x(n);
+		for (int i = 0; i < n; i++){
+			cost_of_x[i] = q[i].cost;
+		}
+		vector<bool> have_x(n,false);
+		int total = 0;
+
+		auto print_features = [&](int index){
+			cout<<wait_time<<endl;
+			for (int i = 0; i < n; ++i){
+				cout<<q[i].name<<"\t"<<(double)total_of_x[i]/(total==0?1:total)<<"\t"<<cost_of_x[i]<<"\t"<<have_x[i]<<endl;
+			}
+			if(index==-1)
+				cout<<"Initialize VM"<<endl;
+			else
+				cout<<"Assign "<<q[index].name<<endl;
+		};
+
+		for(int i = 1; i < path.size(); i++){
+			int index = difference(path[i-1],path[i]);
+			if(index!=-1){
+				index = query_indices[path[i-1].q[index]];
+				total_of_x[index]++;
+				wait_time+=q[index].cost;
+				have_x[index] = true;
+				total++;
+			}
+			else{
+				wait_time = 0;
+				total = 0;
+				fill(total_of_x.begin(),total_of_x.end(),0);
+				fill(have_x.begin(),have_x.end(),false);
+				// fill(cost_of_x.begin(),cost_of_x.end(),0);
+			}
+			print_features(index);
 		}
 	}
-	int stop_s=clock();
-	cout << "time: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << endl;
+	// int stop_s=clock();
+	// cout << "time: " << (stop_s-start_s)/double(CLOCKS_PER_SEC)*1000 << endl;
 }
 
 /*

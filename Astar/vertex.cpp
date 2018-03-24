@@ -26,18 +26,18 @@ ostream& operator<<(ostream & output, const vertex & v){
 	return output<<"}("<<v.last_machine_no<<")";
 }
 
-void difference(ostream & output, const vertex & u, const vertex & v){
-	output<<u<<"->"<<v<<endl;
+int difference(const vertex & u, const vertex & v) throw(int){
+	// output<<u<<"->"<<v<<endl;
 	if(u.last_machine_no+1 == v.last_machine_no){
-		output<<"Initialize VM"<<endl;
-		return;
+		// output<<"Initialize VM"<<endl;
+		return -1;
 	}
 	set<query> m(v.q.begin(),v.q.end());
 	for(int i = 0; i < u.q.size(); i++){
 		if(m.find(u.q[i])==m.end()||u.q[i].count!=v.q[i].count){
-			output<<"Assign "<<u.q[i]<<" to "<<u.last_machine_no<<endl;
-			return;
+			/*output<<"Assign "<<u.q[i].name<<endl*//*<<" to "<<u.last_machine_no<<endl*/;
+			return i;
 		}
 	}
-	output<<"No difference"<<endl;
+	throw 1;
 }

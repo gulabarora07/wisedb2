@@ -26,7 +26,11 @@ public:
 	int last_machine_no;
 	double last_machine_time;
 	vertex():last_machine_no(0),last_machine_time(0){}
-	vertex(vector<query> & a):q(a),last_machine_no(0),last_machine_time(0){}
+	vertex(vector<query> & a):last_machine_no(0),last_machine_time(0){
+		for(int i = 0; i < a.size(); i++)
+			if(a[i].count>0)
+				q.push_back(a[i]);
+	}
 	// copy constructor
 	vertex(const vertex & other):q(other.q),last_machine_no(other.last_machine_no),last_machine_time(other.last_machine_time){}
 	// copy assignment operator

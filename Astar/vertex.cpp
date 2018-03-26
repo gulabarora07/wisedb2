@@ -29,13 +29,15 @@ ostream& operator<<(ostream & output, const vertex & v){
 int difference(ostream & output, const vertex & u, const vertex & v) throw(int){
 	// output<<u<<"->"<<v<<endl;
 	if(u.last_machine_no+1 == v.last_machine_no){
-		output<<"Initialize VM"<<endl;
+		// output<<"Initialize VM"<<endl;
+		output<<"0"<<endl;
 		return -1;
 	}
 	set<query> m(v.q.begin(),v.q.end());
 	for(int i = 0; i < u.q.size(); i++){
 		if(m.find(u.q[i])==m.end()||u.q[i].count!=v.q[i].count){
-			output<<"Assign "<<u.q[i].name<<endl;
+			// output<<"Assign "<<u.q[i].name<<endl;
+			output<<u.q[i].name<<endl;
 			return i;
 		}
 	}

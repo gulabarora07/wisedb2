@@ -53,7 +53,7 @@ public:
 		return (this->last_machine_no < other.last_machine_no)||(this->q.size() < other.q.size());
 	}
 private:
-	friend int difference(const vertex &, const vertex &) throw(int);
+	friend int difference(ostream &, const vertex &, const vertex &) throw(int);
 	friend ostream& operator<<(ostream &, const vertex &);
 };
 

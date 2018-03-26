@@ -68,43 +68,47 @@ int main(){
 
 		reverse(path.begin(),path.end());
 
-		cost_t wait_time = perVMpenalty;
+		cost_t wait_time = 0;
 		vector<int> total_of_x(n,0);
 		vector<cost_t> cost_of_x(n);
+		vector<int> remaining_queries(n);
 		for (int i = 0; i < n; i++){
 			cost_of_x[i] = q[i].cost;
+			remaining_queries[i] = q[i].count;
 		}
 		vector<bool> have_x(n,false);
 		int total = 0;
 
-		auto print_features = [&](int index){
+		auto print_features = [&](){
 			cout<<wait_time<<endl;
 			for (int i = 0; i < n; ++i){
-				cout<<q[i].name<<"\t"<<(double)total_of_x[i]/(total==0?1:total)<<"\t"<<cost_of_x[i]<<"\t"<<have_x[i]<<endl;
+				cout<<q[i].name<<"\t"<<(double)total_of_x[i]/(total==0?1:total)<<"\t";
+				cout<<cost_of_x[i]<<"\t"<<have_x[i]<<"\t"<<remaining_queries[i]<<endl;
 			}
-			if(index==-1)
-				cout<<"Initialize VM"<<endl;
-			else
-				cout<<"Assign "<<q[index].name<<endl;
 		};
 
-		for(int i = 1; i < path.size(); i++){
-			int index = difference(path[i-1],path[i]);
+		for(int i = 2; i < path.size(); i++){
+			print_features();
+			int index = difference(cout, path[i-1], path[i]);
 			if(index!=-1){
 				index = query_indices[path[i-1].q[index]];
 				total_of_x[index]++;
 				wait_time+=q[index].cost;
 				have_x[index] = true;
 				total++;
+				remaining_queries[index]--;
+				for(int i = 0; i < cost_of_x.size(); i++){
+					if(wait_time+q[i].cost>perVMpenalty)
+						cost_of_x[i] = INF;
+				}
 			}
 			else{
 				wait_time = 0;
 				total = 0;
 				fill(total_of_x.begin(),total_of_x.end(),0);
-				fill(have_x.begin(),have_x.end(),false);
-				// fill(cost_of_x.begin(),cost_of_x.end(),0);
+				for(int i = 0; i < cost_of_x.size(); i++)
+					cost_of_x[i] = q[i].cost;
 			}
-			print_features(index);
 		}
 	}
 	// int stop_s=clock();

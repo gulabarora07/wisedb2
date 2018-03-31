@@ -6,7 +6,7 @@ trY = np.load("../tests/trY.npy")
 tstX = np.load("../tests/tstX.npy")
 tstY = np.load("../tests/tstY.npy")
 
-clf = tree.DecisionTreeClassifier(max_depth = 20)
+clf = tree.DecisionTreeClassifier()
 clf = clf.fit(trX,trY)
 
 n = len(tstX)
@@ -15,9 +15,6 @@ out = clf.predict(tstX)
 for i in range(n):
 	if tstY[i] == out[i]:
 		s+=1
-
-cm = confusion_matrix(tstY, out)
-print cm
 
 acc = float(s)/float(n)
 acc *= 100.0

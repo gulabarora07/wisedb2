@@ -1,12 +1,15 @@
 from sklearn import tree
 import numpy as np 
+from sklearn.metrics import confusion_matrix
 
-trX = np.load("../tests/trX.npy")
-trY = np.load("../tests/trY.npy")
-tstX = np.load("../tests/tstX.npy")
-tstY = np.load("../tests/tstY.npy")
+trX = np.load("../tests/ch_trX.npy")
+trY = np.load("../tests/ch_trY.npy")
+tstX = np.load("../tests/ch_tstX.npy")
+tstY = np.load("../tests/ch_tstY.npy")
 
-clf = tree.DecisionTreeClassifier(max_depth = 20)
+print len(trX),len(tstX)
+
+clf = tree.DecisionTreeClassifier(max_depth = 25)
 clf = clf.fit(trX,trY)
 
 n = len(tstX)

@@ -31,11 +31,11 @@ int main(){
 		int n;
 		cin>>n>>perVMpenalty>>startupCost;
 		vector<query> q(n);
-		unordered_map<query, int, std::hash<query> > query_indices;
+		unordered_map<string, int, boost::hash<string> > query_indices;
 		query_indices.clear();
 		for(int i = 0; i < n; i++){
 			cin>>q[i];
-			query_indices[q[i]] = i;
+			query_indices[q[i].name] = i;
 		}
 		int t = 1;
 		while(t--){
@@ -71,6 +71,7 @@ int main(){
 				for (int i = 0; i < n; ++i){
 					cout<<(double)total_of_x[i]/(total==0?1:total)<<" ";
 					cout<<cost_of_x[i]<<" "<<have_x[i]<<" ";
+					cout<<remaining_queries[i]<<endl;
 				}
 				cout<<endl;
 			};
@@ -79,7 +80,7 @@ int main(){
 				print_features();
 				int index = difference(cout, path[i-1], path[i]);
 				if(index!=-1){
-					index = query_indices[path[i-1].q[index]];
+					index = query_indices[path[i-1].q[index].name];
 					total_of_x[index]++;
 					wait_time+=q[index].cost;
 					have_x[index] = true;

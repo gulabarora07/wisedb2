@@ -59,7 +59,7 @@ inline size_t hash_value(const query & x)
 	return seed;
 }
 
-// accounts for only name of the query, part of std, therefore can be called by std::hash<query>()
+/*// accounts for only name of the query, part of std, therefore can be called by std::hash<query>()
 namespace std {
 	template <>
 	struct hash<query>
@@ -69,6 +69,6 @@ namespace std {
 			return hasher(x.name);
 		}
 	};
-}
+}*/
 
 #endif

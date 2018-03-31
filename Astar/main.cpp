@@ -7,10 +7,10 @@
 #include <boost/functional/hash_fwd.hpp>
 #include <boost/functional/hash.hpp>
 #include <ctime>
-#include "vertex.h"
 #include "query.h"
-#include "graph.h"
+#include "vertex.h"
 #include "algos.h"
+#include "graph.h"
 #define INF 1e10
 
 /* change code to account for different costs for different machines, change vector<query> to set in vertex */
@@ -31,7 +31,7 @@ int main(){
 		int n;
 		cin>>n>>perVMpenalty>>startupCost;
 		vector<query> q(n);
-		unordered_map<query,int,boost::hash<query> > query_indices;
+		unordered_map<query, int, std::hash<query> > query_indices;
 		query_indices.clear();
 		for(int i = 0; i < n; i++){
 			cin>>q[i];
@@ -41,7 +41,7 @@ int main(){
 		while(t--){
 			vertex st(q), goal;
 			unordered_map<vertex, vertex, std::hash<vertex> > came_from;
-			unordered_map<vertex, cost_t> cost_so_far;
+			unordered_map<vertex, cost_t, std::hash<vertex> > cost_so_far;
 			vertex u = goal;
 			Astar(st,goal,came_from,cost_so_far,&(Graph::heuristic));
 			u = goal;
@@ -66,7 +66,7 @@ int main(){
 			vector<bool> have_x(n,false);
 			int total = 0;
 
-			auto print_features = [&](){
+			auto print_features = [&]{
 				cout<<wait_time<<" ";
 				for (int i = 0; i < n; ++i){
 					cout<<(double)total_of_x[i]/(total==0?1:total)<<" ";

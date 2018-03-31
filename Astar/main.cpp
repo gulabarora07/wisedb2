@@ -78,6 +78,11 @@ int main(){
 
 			for(int i = 2; i < path.size(); i++){
 				print_features();
+				if(remaining_queries[i] < 0)
+				{
+					cout<<"Test:"<<_tt<<endl;
+					exit(-1);
+				}
 				int index = difference(cout, path[i-1], path[i]);
 				if(index!=-1){
 					index = query_indices[path[i-1].q[index].name];

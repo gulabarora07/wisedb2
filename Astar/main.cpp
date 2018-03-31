@@ -72,17 +72,17 @@ int main(){
 					cout<<(double)total_of_x[i]/(total==0?1:total)<<" ";
 					cout<<cost_of_x[i]<<" "<<have_x[i]<<" ";
 					cout<<remaining_queries[i]<<endl;
+					if(remaining_queries[i] < 0)
+					{
+						cout<<"Test:"<<_tt<<endl;
+						exit(-1);
+					}
 				}
 				cout<<endl;
 			};
 
 			for(int i = 2; i < path.size(); i++){
 				print_features();
-				if(remaining_queries[i] < 0)
-				{
-					cout<<"Test:"<<_tt<<endl;
-					exit(-1);
-				}
 				int index = difference(cout, path[i-1], path[i]);
 				if(index!=-1){
 					index = query_indices[path[i-1].q[index].name];
